@@ -11,27 +11,30 @@ def read_adc():
     except FileNotFoundError:
         return None
 
-lcd = CharLCD(
+lcd = CharLCD( # Information about the LCD
     i2c_expander = 'PCF8574',
     address = 0x27,
-    port = 6,
-    cols = 20,
+    port = 6,        # I2C Location
+    cols = 20,       # Display size
     rows = 4,
 )
 
-lcd.clear()
+lcd.clear()        # Ensures LCD is cleared
 while True:
-    raw_val = read_adc()
-    voltage = (raw_val * 1.8) / 4095
-    voltage2 = voltage * (8.75) * 1.91
-    lcd.cursor_pos = (0, 0)
+    raw_val = read_adc()        # Gets the ADC value
+    voltage = (raw_val * 1.8) / 4095        # Converts ADC value back to actual voltage from divider circuit
+    voltage2 = voltage * (8.75) * 1.91      # Converts the voltage to the battery voltage, the divider ratio is 8.75
+
+    lcd.cursor_pos = (0, 0)                 # Writes the battery voltage to LCD, waits 0.5 seconds to ensure it is written before next code is ran
     lcd.write_string(f"Voltage: {voltage2:.2f}V ")
     time.sleep(0.5)
-    percentVolt = (voltage2 - 9) / (12.6 - 9 ) * 100
+
+    percentVolt = (voltage2 - 9) / (12.6 - 9 ) * 100        # Calculates current battery percentage based off given max and min voltages of the battery 12.6 and 9 volts 
     lcd.cursor_pos = (1,0)
     lcd.write_string(f"Percentage: {percentVolt:.2f}% ")
     time.sleep(0.5)
-    if percentVolt < 30:
+
+    if percentVolt < 30:            # Determines if the battery has reached critical low values and displays warning message
     	lcd.cursor_pos = (2,0)
     	lcd.write_string("LOW VOLTAGE WARNING")
     	time.sleep(0.5)
