@@ -1,0 +1,38 @@
+from RPLCD.i2c import CharLCD
+from time import sleep
+import time
+
+def read_adc():
+    # Read the raw value from the system file
+    try:
+        with open("/sys/bus/iio/devices/iio:device0/in_voltage2_raw", "r") as f:
+            raw = int(f.read().strip())
+            return raw
+    except FileNotFoundError:
+        return None
+
+lcd = CharLCD(
+    i2c_expander = 'PCF8574',
+    address = 0x27,
+    port = 6,
+    cols = 20,
+    rows = 4,
+)
+
+lcd.clear()
+while True:
+    raw_val = read_adc()
+    voltage = (raw_val * 1.8) / 4095
+    voltage2 = voltage * (8.75) * 1.91
+    lcd.cursor_pos = (0, 0)
+    lcd.write_string(f"Voltage: {voltage2:.2f}V ")
+    time.sleep(0.5)
+    percentVolt = (voltage2 - 9) / (12.6 - 9 ) * 100
+    lcd.cursor_pos = (1,0)
+    lcd.write_string(f"Percentage: {percentVolt:.2f}% ")
+    time.sleep(0.5)
+    if percentVolt < 30:
+    	lcd.cursor_pos = (2,0)
+    	lcd.write_string("LOW VOLTAGE WARNING")
+    	time.sleep(0.5)
+
