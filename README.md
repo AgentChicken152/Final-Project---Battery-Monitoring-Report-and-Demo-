@@ -8,3 +8,6 @@ Due to the high value of the resistors, R1 = 46400 Ohms and R2 = 6400 Ohms, the 
 Line 26: voltage2 = voltage * (8.75) * 1.91
 
 The additional multiplication of 1.91 is to correct the value of the ADC. This is not the correct way to fix the issue, a better solution would be to use resistance values that are 10x less than the current ones and to add a capacitor to help stabilize the voltage. However, due to time constrants, this was not a feasible option. 
+
+---------------------------------------------------------------------------
+The BMS Video shows the battery voltage and percentage being displayed on the LCD along with the Detect.py file running for the camera. This shows that both files can be running at the same time without any issues. 
